@@ -7,8 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -33,13 +31,13 @@ public class WidgetServiceImpl implements WidgetService {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<WidgetEntity> getWidgetById(@Valid @NotNull Long id) {
+    public Optional<WidgetEntity> getWidgetById(Long id) {
         return  widgetRepository.findById(id);
     }
 
     @Override
     @Transactional()
-    public WidgetEntity createWidget(@Valid WidgetEntity widgetEntity) {
+    public WidgetEntity createWidget(WidgetEntity widgetEntity) {
         return  widgetRepository.save(widgetEntity);
     }
 

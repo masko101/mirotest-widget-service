@@ -2,6 +2,7 @@ package masko.mirotest.widgetservice.api.model;
 
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.threeten.bp.OffsetDateTime;
 
 import javax.validation.constraints.*;
 
@@ -9,8 +10,9 @@ import javax.validation.constraints.*;
  * Widget
  */
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2020-09-12T08:21:10.023Z[GMT]")
-public class Widget   {
+public class Widget {
   @JsonProperty("id")
+  @NotNull
   private Long id;
 
   @JsonProperty("x")
@@ -25,11 +27,24 @@ public class Widget   {
   @NotNull
   private Integer z;
 
-  public Widget(Long id, Integer x, Integer y, Integer z) {
+  @JsonProperty("modified")
+  @NotNull
+  private OffsetDateTime modified;
+
+  public Widget(@NotNull Long id, @NotNull Integer x, @NotNull Integer y, @NotNull Integer z, @NotNull OffsetDateTime modified) {
     this.id = id;
     this.x = x;
     this.y = y;
     this.z = z;
+    this.modified = modified;
+  }
+
+  public Widget(@NotNull Widget widget) {
+    this.id = widget.id;
+    this.x = widget.x;
+    this.y = widget.y;
+    this.z = widget.z;
+    this.modified = widget.modified;
   }
 
   public Widget id(Long id) {
@@ -37,10 +52,6 @@ public class Widget   {
     return this;
   }
 
-  /**
-   * Get id
-   * @return id
-  **/
   public Long getId() {
     return id;
   }
@@ -54,7 +65,6 @@ public class Widget   {
     return this;
   }
 
-  @NotNull
   public Integer getX() {
     return x;
   }
@@ -68,7 +78,6 @@ public class Widget   {
     return this;
   }
 
-  @NotNull
   public Integer getY() {
     return y;
   }
@@ -90,6 +99,14 @@ public class Widget   {
     this.z = z;
   }
 
+  public OffsetDateTime getModified() {
+    return modified;
+  }
+
+  public void setModified(OffsetDateTime modified) {
+    this.modified = modified;
+  }
+
   @Override
   public boolean equals(java.lang.Object o) {
     if (this == o) {
@@ -100,24 +117,27 @@ public class Widget   {
     }
     Widget widget = (Widget) o;
     return Objects.equals(this.id, widget.id) &&
-        Objects.equals(this.x, widget.x) &&
-        Objects.equals(this.y, widget.y) &&
-        Objects.equals(this.z, widget.z);
+            Objects.equals(this.x, widget.x) &&
+            Objects.equals(this.y, widget.y) &&
+            Objects.equals(this.z, widget.z) &&
+            Objects.equals(this.modified, widget.modified);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, x, y, z);
+    return Objects.hash(id, x, y, z, modified);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class Widget {\n");
+
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    x: ").append(toIndentedString(x)).append("\n");
     sb.append("    y: ").append(toIndentedString(y)).append("\n");
     sb.append("    z: ").append(toIndentedString(z)).append("\n");
+    sb.append("    modified: ").append(toIndentedString(modified)).append("\n");
     sb.append("}");
     return sb.toString();
   }

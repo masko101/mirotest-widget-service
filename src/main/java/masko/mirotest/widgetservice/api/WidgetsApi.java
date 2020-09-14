@@ -6,6 +6,7 @@
 package masko.mirotest.widgetservice.api;
 
 import masko.mirotest.widgetservice.api.model.Widget;
+import masko.mirotest.widgetservice.api.model.WidgetCreate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,8 +23,8 @@ public interface WidgetsApi {
     @RequestMapping(value = "/widgets",
             produces = {"application/json"},
             method = RequestMethod.GET)
-    ResponseEntity<List<Widget>> widgetsGet(@NotNull @Valid @RequestParam(value = "skip", required = true) Integer skip
-            , @NotNull @Valid @RequestParam(value = "limit", required = true) Integer limit);
+    ResponseEntity<List<Widget>> widgetsGet(@Valid @RequestParam(value = "skip", required = false) Integer skip
+            , @Valid @RequestParam(value = "limit", required = false) Integer limit);
 
     @RequestMapping(value = "/widgets/{id}",
             produces = {"application/json"},
@@ -39,13 +40,13 @@ public interface WidgetsApi {
             produces = {"application/json"},
             consumes = {"application/json"},
             method = RequestMethod.POST)
-    ResponseEntity<Widget> widgetsPost(@Valid @RequestBody Widget body);
+    ResponseEntity<Widget> widgetsPost(@Valid @RequestBody WidgetCreate widget);
 
     @RequestMapping(value = "/widgets/{id}",
             produces = {"application/json"},
             consumes = {"application/json"},
             method = RequestMethod.PUT)
-    ResponseEntity<Widget> widgetsIdPut(@PathVariable("id") Long id, @Valid @RequestBody Widget body);
+    ResponseEntity<Widget> widgetsIdPut(@PathVariable("id") Long id, @Valid @RequestBody WidgetCreate widget);
 
 }
 
