@@ -27,6 +27,8 @@ components:
       required:
         - x
         - y
+        - width
+        - height
       properties:
         x:
           type: integer
@@ -37,12 +39,22 @@ components:
         z:
           type: integer
           format: int32
+        width:
+          type: integer
+          format: int32
+          minimum: 1
+        height:
+          type: integer
+          format: int32
+          minimum: 1
     Widget:
       type: object
       required:
         - id
         - x
         - y
+        - width
+        - height
       properties:
         id:
           type: integer
@@ -56,6 +68,14 @@ components:
         z:
           type: integer
           format: int32
+        width:
+          type: integer
+          format: int32
+          minimum: 1
+        height:
+          type: integer
+          format: int32
+          minimum: 1
         modified:
           type: string
           format: date-time
@@ -68,14 +88,15 @@ components:
       schema:
         type: integer
         format: int32
-    skipParam:
-      name: skip
+    pageParam:
+      name: page
       in: query
-      description: number of items to skip
+      description: the page to display
       required: false
       schema:
         type: integer
         format: int32
+        minimum: 0
     limitParam:
       name: limit
       in: query
@@ -84,6 +105,8 @@ components:
       schema:
         type: integer
         format: int32
+        maximum: 500
+        minimum: 1
   responses:
     NotFound:
       description: Resource Not found.
@@ -105,7 +128,7 @@ paths:
     get:
       description: Returns all widgets
       parameters:
-        - $ref: "#/components/parameters/skipParam"
+        - $ref: "#/components/parameters/pageParam"
         - $ref: "#/components/parameters/limitParam"
       responses:
         '200':

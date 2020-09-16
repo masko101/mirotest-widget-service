@@ -3,14 +3,13 @@ package masko.mirotest.widgetservice.service;
 import masko.mirotest.widgetservice.model.WidgetEntity;
 import masko.mirotest.widgetservice.repository.WidgetRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @Validated
 @Service("WidgetService")
@@ -25,8 +24,8 @@ public class WidgetServiceImpl implements WidgetService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<WidgetEntity> getAllWidgets() {
-        return StreamSupport.stream(widgetRepository.findAll().spliterator(), false).collect(Collectors.toList());
+    public List<WidgetEntity> getAllWidgets(Integer page, Integer limit) {
+        return widgetRepository.findAll(PageRequest.of(page, limit)).getContent();
     }
 
     @Override
@@ -43,8 +42,11 @@ public class WidgetServiceImpl implements WidgetService {
 
     @Override
     @Transactional()
-    public WidgetEntity updateWidget(WidgetEntity widgetEntity) {
-        return widgetRepository.save(widgetEntity);
+    public Optional<WidgetEntity> updateWidget(WidgetEntity widgetEntity) {
+        if (widgetRepository.existsById(widgetEntity.getId()))
+            return Optional.of(widgetRepository.save(widgetEntity));
+        else
+            return Optional.empty();
     }
 
     @Override

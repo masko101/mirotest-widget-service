@@ -1,30 +1,27 @@
 package masko.mirotest.widgetservice.repository;
 
-import masko.mirotest.widgetservice.api.model.Widget;
 import masko.mirotest.widgetservice.model.WidgetEntity;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.PageRequest;
 
-import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class WidgetRepositoryImplTest {
 
     WidgetRepositoryImpl widgetRepository = new WidgetRepositoryImpl();
 
-    private static ArrayList<WidgetEntity> testWidgetEntities = new ArrayList<WidgetEntity>();
+    private static final ArrayList<WidgetEntity> testWidgetEntities = new ArrayList<>();
     static {
-        testWidgetEntities.add(new WidgetEntity(1L, 321, 102, 10));
-        testWidgetEntities.add(new WidgetEntity(2L, 123, 201, 20));
-        testWidgetEntities.add(new WidgetEntity(3L, 643, 164, 30));
+        testWidgetEntities.add(new WidgetEntity(1L, 321, 102, 10, 100, 150));
+        testWidgetEntities.add(new WidgetEntity(2L, 123, 201, 20, 80, 120));
+        testWidgetEntities.add(new WidgetEntity(3L, 643, 164, 30, 140, 70));
     }
 
     @BeforeEach
@@ -37,15 +34,21 @@ class WidgetRepositoryImplTest {
 
     @Test
     void findAllWithPaging() {
-/*
-        Iterable<WidgetEntity> foundWidgets = widgetRepository.findAll();
+        Iterable<WidgetEntity> foundWidgets = widgetRepository.findAll(PageRequest.of(0, 2));
         Iterator<WidgetEntity> widgetEntityIterator = foundWidgets.iterator();
 
         Assert.assertEquals("Widget 1 Id", 1, widgetEntityIterator.next().getId().intValue());
         Assert.assertEquals("Widget 2 Id", 2, widgetEntityIterator.next().getId().intValue());
+        Assert.assertFalse("No More Widgets", widgetEntityIterator.hasNext());
+
+        foundWidgets = widgetRepository.findAll(PageRequest.of(1, 2));
+        widgetEntityIterator = foundWidgets.iterator();
         Assert.assertEquals("Widget 3 Id", 3, widgetEntityIterator.next().getId().intValue());
         Assert.assertFalse("No More Widgets", widgetEntityIterator.hasNext());
-*/
+
+        foundWidgets = widgetRepository.findAll(PageRequest.of(2, 2));
+        widgetEntityIterator = foundWidgets.iterator();
+        Assert.assertFalse("No More Widgets", widgetEntityIterator.hasNext());
     }
 
     @Nested
@@ -54,8 +57,24 @@ class WidgetRepositoryImplTest {
         @Test
         void saveNewNullId() {
             WidgetEntity newWidget =
-                    widgetRepository.save(new WidgetEntity(null, 821, 464, 40, null));
+                    widgetRepository.save(new WidgetEntity(null, 821, 464, 40, 140, 70, null));
             Assert.assertEquals("New Widget id", 4L, newWidget.getId().longValue());
+            Assert.assertEquals("New Widget x", 821, newWidget.getX().intValue());
+            Assert.assertEquals("New Widget y", 464, newWidget.getY().intValue());
+            Assert.assertEquals("New Widget z", 40, newWidget.getZ().intValue());
+            Assert.assertNotNull("New Widget modified not null", newWidget.getModified());
+
+            newWidget =
+                    widgetRepository.save(new WidgetEntity(null, 821, 464, 40, 140, 70, null));
+            Assert.assertEquals("New Widget id", 5L, newWidget.getId().longValue());
+            Assert.assertEquals("New Widget x", 821, newWidget.getX().intValue());
+            Assert.assertEquals("New Widget y", 464, newWidget.getY().intValue());
+            Assert.assertEquals("New Widget z", 40, newWidget.getZ().intValue());
+            Assert.assertNotNull("New Widget modified not null", newWidget.getModified());
+
+            newWidget =
+                    widgetRepository.save(new WidgetEntity(null, 821, 464, 40, 140, 70, null));
+            Assert.assertEquals("New Widget id", 6L, newWidget.getId().longValue());
             Assert.assertEquals("New Widget x", 821, newWidget.getX().intValue());
             Assert.assertEquals("New Widget y", 464, newWidget.getY().intValue());
             Assert.assertEquals("New Widget z", 40, newWidget.getZ().intValue());
@@ -66,19 +85,29 @@ class WidgetRepositoryImplTest {
 
             WidgetEntity widget1 = widgetEntityIterator.next();
             Assert.assertEquals("Widget 1 Id", 1, widget1.getId().intValue());
+            Assert.assertEquals("Widget 1 Id", 10, widget1.getZ().intValue());
             WidgetEntity widget2 = widgetEntityIterator.next();
             Assert.assertEquals("Widget 2 Id", 2, widget2.getId().intValue());
+            Assert.assertEquals("Widget 2 Id", 20, widget2.getZ().intValue());
             WidgetEntity widget3 = widgetEntityIterator.next();
             Assert.assertEquals("Widget 3 Id", 3, widget3.getId().intValue());
+            Assert.assertEquals("Widget 3 Id", 30, widget3.getZ().intValue());
             WidgetEntity widget4 = widgetEntityIterator.next();
-            Assert.assertEquals("Widget 4 Id", 4, widget4.getId().intValue());
+            Assert.assertEquals("Widget 4 Id", 6, widget4.getId().intValue());
+            Assert.assertEquals("Widget 4 Id", 40, widget4.getZ().intValue());
+            WidgetEntity widget5 = widgetEntityIterator.next();
+            Assert.assertEquals("Widget 4 Id", 5, widget5.getId().intValue());
+            Assert.assertEquals("Widget 5 Id", 41, widget5.getZ().intValue());
+            WidgetEntity widget6 = widgetEntityIterator.next();
+            Assert.assertEquals("Widget 4 Id", 4, widget6.getId().intValue());
+            Assert.assertEquals("Widget 6 Id", 42, widget6.getZ().intValue());
             Assert.assertFalse("No More Widgets", widgetEntityIterator.hasNext());
         }
 
         @Test
         void saveNewUniqueId() {
             WidgetEntity newWidget =
-                    widgetRepository.save(new WidgetEntity(6L, 821, 464, 40, null));
+                    widgetRepository.save(new WidgetEntity(6L, 821, 464, 40, 140, 70, null));
             Assert.assertEquals("New Widget id", 6L, newWidget.getId().longValue());
             Assert.assertEquals("New Widget x", 821, newWidget.getX().intValue());
             Assert.assertEquals("New Widget y", 464, newWidget.getY().intValue());
@@ -102,7 +131,7 @@ class WidgetRepositoryImplTest {
         @Test
         void saveExistingIdUniqueZIndex() {
             WidgetEntity newWidget =
-                    widgetRepository.save(new WidgetEntity(2L, 821, 464, 40, null));
+                    widgetRepository.save(new WidgetEntity(2L, 821, 464, 40, 140, 70, null));
             Assert.assertEquals("New Widget id", 2L, newWidget.getId().longValue());
             Assert.assertEquals("New Widget x", 821, newWidget.getX().intValue());
             Assert.assertEquals("New Widget y", 464, newWidget.getY().intValue());
@@ -127,7 +156,7 @@ class WidgetRepositoryImplTest {
         @Test
         void saveExistingIdExistingZIndex() {
             WidgetEntity newWidget =
-                    widgetRepository.save(new WidgetEntity(3L, 821, 464, 20, null));
+                    widgetRepository.save(new WidgetEntity(3L, 821, 464, 20, 140, 70, null));
             Assert.assertEquals("New Widget id", 3L, newWidget.getId().longValue());
             Assert.assertEquals("New Widget x", 821, newWidget.getX().intValue());
             Assert.assertEquals("New Widget y", 464, newWidget.getY().intValue());
@@ -152,8 +181,8 @@ class WidgetRepositoryImplTest {
         @Test
         void saveAll() {
             ArrayList<WidgetEntity> saveWidgets = new ArrayList<>();
-            saveWidgets.add(new WidgetEntity(3L, 821, 464, 20, null));
-            saveWidgets.add(new WidgetEntity(4L, 821, 464, 40, null));
+            saveWidgets.add(new WidgetEntity(3L, 821, 464, 20, 140, 70, null));
+            saveWidgets.add(new WidgetEntity(4L, 821, 464, 40, 140, 70, null));
             Iterable<WidgetEntity> newWidgets = widgetRepository.saveAll(saveWidgets);
             Iterator<WidgetEntity> newWidgetsIterator = newWidgets.iterator();
             WidgetEntity newWidget1 = newWidgetsIterator.next();
@@ -197,7 +226,7 @@ class WidgetRepositoryImplTest {
 
     @Test
     void existsById() {
-        Boolean widgetExists = widgetRepository.existsById(2L);
+        boolean widgetExists = widgetRepository.existsById(2L);
         Assert.assertTrue(widgetExists);
     }
 
@@ -253,7 +282,7 @@ class WidgetRepositoryImplTest {
 
     @Test
     void delete() {
-        widgetRepository.delete(new WidgetEntity(2L, 821, 464, 40, null));
+        widgetRepository.delete(new WidgetEntity(2L, 821, 464, 40, 100, 150, null));
 
         Iterable<WidgetEntity> foundWidgets = widgetRepository.findAll();
         Iterator<WidgetEntity> widgetEntityIterator = foundWidgets.iterator();
@@ -273,8 +302,8 @@ class WidgetRepositoryImplTest {
     @Test
     void deleteAllSpecified() {
         widgetRepository.deleteAll(Arrays.asList(
-                    new WidgetEntity(1L, 0, 0, 0, null),
-                    new WidgetEntity(3L, 0, 0, 0, null)
+                    new WidgetEntity(1L, 0, 0, 0, 0, 0, null),
+                    new WidgetEntity(3L, 0, 0, 0, 0, 0, null)
                 )
         );
         Iterable<WidgetEntity> foundWidgets = widgetRepository.findAll();

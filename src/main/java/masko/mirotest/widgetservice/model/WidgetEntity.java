@@ -1,5 +1,7 @@
 package masko.mirotest.widgetservice.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import masko.mirotest.widgetservice.api.model.Widget;
 import org.threeten.bp.OffsetDateTime;
 
 import javax.persistence.Entity;
@@ -26,21 +28,33 @@ public class WidgetEntity {
     private Integer z = null;
 
     @NotNull
+    private Integer width;
+
+    @NotNull
+    private Integer height;
+
+    @NotNull
     private OffsetDateTime modified;
 
-    public WidgetEntity(@NotNull Long id, @NotNull Integer x, @NotNull Integer y, @NotNull Integer z, @NotNull OffsetDateTime modified) {
+    public WidgetEntity(@NotNull Long id, @NotNull Integer x, @NotNull Integer y, @NotNull Integer z,
+                        @NotNull Integer width, @NotNull Integer height, @NotNull OffsetDateTime modified) {
         this.id = id;
         this.x = x;
         this.y = y;
         this.z = z;
+        this.width = width;
+        this.height = height;
         this.modified = modified;
     }
 
-    public WidgetEntity(@NotNull Long id, @NotNull Integer x, @NotNull Integer y, @NotNull Integer z) {
+    public WidgetEntity(@NotNull Long id, @NotNull Integer x, @NotNull Integer y, @NotNull Integer z,
+                        @NotNull Integer width, @NotNull Integer height) {
         this.id = id;
         this.x = x;
         this.y = y;
         this.z = z;
+        this.width = width;
+        this.height = height;
         this.modified = OffsetDateTime.now();
     }
 
@@ -49,10 +63,16 @@ public class WidgetEntity {
         this.x = widgetEntity.x;
         this.y = widgetEntity.y;
         this.z = widgetEntity.z;
+        this.width = widgetEntity.width;
+        this.height = widgetEntity.height;
         this.modified = widgetEntity.modified;
     }
 
     public WidgetEntity() {
+    }
+
+    public int getXRight() {
+        return x + width;
     }
 
     public Long getId() {
@@ -87,6 +107,22 @@ public class WidgetEntity {
         this.z = z;
     }
 
+    public Integer getWidth() {
+        return width;
+    }
+
+    public void setWidth(Integer width) {
+        this.width = width;
+    }
+
+    public Integer getHeight() {
+        return height;
+    }
+
+    public void setHeight(Integer height) {
+        this.height = height;
+    }
+
     public OffsetDateTime getModified() {
         return modified;
     }
@@ -108,12 +144,14 @@ public class WidgetEntity {
                 Objects.equals(this.x, widget.x) &&
                 Objects.equals(this.y, widget.y) &&
                 Objects.equals(this.z, widget.z) &&
+                Objects.equals(this.width, widget.width) &&
+                Objects.equals(this.height, widget.height) &&
                 Objects.equals(this.modified, widget.modified);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, x, y, z, modified);
+        return Objects.hash(id, x, y, z, width, height, modified);
     }
 
     @Override
@@ -125,6 +163,8 @@ public class WidgetEntity {
         sb.append("    x: ").append(toIndentedString(x)).append("\n");
         sb.append("    y: ").append(toIndentedString(y)).append("\n");
         sb.append("    z: ").append(toIndentedString(z)).append("\n");
+        sb.append("    width: ").append(toIndentedString(width)).append("\n");
+        sb.append("    height: ").append(toIndentedString(height)).append("\n");
         sb.append("    modified: ").append(toIndentedString(modified)).append("\n");
         sb.append("}");
         return sb.toString();

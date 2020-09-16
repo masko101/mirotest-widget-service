@@ -22,10 +22,21 @@ public class WidgetCreate   {
     @JsonProperty("z")
     private Integer z = null;
 
-    public WidgetCreate(@NotNull Integer x, @NotNull Integer y, Integer z) {
+    @NotNull
+    @JsonProperty("width")
+    private Integer width;
+
+    @NotNull
+    @JsonProperty("height")
+    private Integer height;
+
+    public WidgetCreate(@NotNull Integer x, @NotNull Integer y, Integer z, @NotNull Integer width,
+                        @NotNull Integer height) {
         this.x = x;
         this.y = y;
         this.z = z;
+        this.width = width;
+        this.height = height;
     }
 
     public WidgetCreate x(Integer x) {
@@ -67,6 +78,35 @@ public class WidgetCreate   {
         this.z = z;
     }
 
+    public WidgetCreate width(Integer width) {
+        this.width = width;
+        return this;
+    }
+
+    @NotNull
+    @Min(1)
+    public Integer getWidth() {
+        return width;
+    }
+
+    public void setWidth(Integer width) {
+        this.width = width;
+    }
+
+    public WidgetCreate height(Integer height) {
+        this.height = height;
+        return this;
+    }
+
+    @NotNull
+    @Min(1)
+    public Integer getHeight() {
+        return height;
+    }
+
+    public void setHeight(Integer height) {
+        this.height = height;
+    }
 
     @Override
     public boolean equals(java.lang.Object o) {
@@ -79,12 +119,14 @@ public class WidgetCreate   {
         WidgetCreate widgetCreate = (WidgetCreate) o;
         return Objects.equals(this.x, widgetCreate.x) &&
                 Objects.equals(this.y, widgetCreate.y) &&
-                Objects.equals(this.z, widgetCreate.z);
+                Objects.equals(this.z, widgetCreate.z) &&
+                Objects.equals(this.width, widgetCreate.width) &&
+                Objects.equals(this.height, widgetCreate.height);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(x, y, z);
+        return Objects.hash(x, y, z, width, height);
     }
 
     @Override
@@ -95,6 +137,8 @@ public class WidgetCreate   {
         sb.append("    x: ").append(toIndentedString(x)).append("\n");
         sb.append("    y: ").append(toIndentedString(y)).append("\n");
         sb.append("    z: ").append(toIndentedString(z)).append("\n");
+        sb.append("    width: ").append(toIndentedString(width)).append("\n");
+        sb.append("    height: ").append(toIndentedString(height)).append("\n");
         sb.append("}");
         return sb.toString();
     }

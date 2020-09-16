@@ -9,6 +9,7 @@ import masko.mirotest.widgetservice.service.WidgetService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -38,10 +39,15 @@ public class WidgetsApiController implements WidgetsApi {
         this.widgetService = widgetService;
     }
 
-    public ResponseEntity<List<Widget>> widgetsGet(@RequestParam(value = "skip", required = false) Integer skip, @RequestParam(value = "limit", required = false) Integer limit) {
+    public ResponseEntity<List<Widget>> widgetsGet(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "limit", required = false) Integer limit) {
         String accept = request.getHeader("Accept");
         if (accept != null && accept.contains("application/json")) {
-            List<Widget> foundWidgets = WidgetMapper.widgetsFromWidgetEntities(widgetService.getAllWidgets());
+            //Defaults not working
+            if (page == null)
+                page = 0;
+            if (limit == null)
+                limit = 10;
+            List<Widget> foundWidgets = WidgetMapper.widgetsFromWidgetEntities(widgetService.getAllWidgets(page, limit));
             return new ResponseEntity<List<Widget>>(foundWidgets, HttpStatus.OK);
         }
 
@@ -91,9 +97,13 @@ public class WidgetsApiController implements WidgetsApi {
     public ResponseEntity<Widget> widgetsIdPut(@PathVariable("id") Long id, @RequestBody WidgetCreate widget) {
         String accept = request.getHeader("Accept");
         if (accept != null && accept.contains("application/json")) {
-            WidgetEntity widgetEntity =
+            Optional<WidgetEntity> widgetEntityOptional =
                     widgetService.updateWidget(WidgetMapper.widgetEntityFromWidgetCreate(id, widget));
-            return new ResponseEntity<Widget>(WidgetMapper.widgetFromWidgetEntity(widgetEntity), HttpStatus.OK);
+            if (widgetEntityOptional.isPresent())
+                return new ResponseEntity<Widget>(WidgetMapper.widgetFromWidgetEntity(widgetEntityOptional.get()),
+                        HttpStatus.OK);
+            else
+                return new ResponseEntity<Widget>(HttpStatus.NOT_FOUND);
         }
 
         return new ResponseEntity<Widget>(HttpStatus.NOT_IMPLEMENTED);

@@ -9,13 +9,13 @@ import java.util.Optional;
 @Component
 public interface WidgetService {
 
-    public List<WidgetEntity> getAllWidgets();
+    public List<WidgetEntity> getAllWidgets(Integer skip, Integer limit);
 
     public Optional<WidgetEntity> getWidgetById(Long id);
 
     public WidgetEntity createWidget(WidgetEntity widgetEntity);
 
-    public WidgetEntity updateWidget(WidgetEntity widgetEntity);
+    public Optional<WidgetEntity> updateWidget(WidgetEntity widgetEntity);
 
     public Optional<WidgetEntity> deleteWidgetById(Long id);
 }

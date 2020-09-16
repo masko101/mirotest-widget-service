@@ -23,8 +23,8 @@ public interface WidgetsApi {
     @RequestMapping(value = "/widgets",
             produces = {"application/json"},
             method = RequestMethod.GET)
-    ResponseEntity<List<Widget>> widgetsGet(@Valid @RequestParam(value = "skip", required = false) Integer skip
-            , @Valid @RequestParam(value = "limit", required = false) Integer limit);
+    ResponseEntity<List<Widget>> widgetsGet(@Valid @Min(0) @RequestParam(value = "skip", required = false, defaultValue = "0") Integer skip
+            , @Valid @Min(1) @Max(500) @RequestParam(value = "limit", required = false, defaultValue = "10") Integer limit);
 
     @RequestMapping(value = "/widgets/{id}",
             produces = {"application/json"},

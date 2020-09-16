@@ -12,18 +12,15 @@ public class WidgetMapper {
     }
 
     public static Widget widgetFromWidgetEntity(WidgetEntity widgetEntity) {
-        return new Widget(widgetEntity.getId(), widgetEntity.getX(), widgetEntity.getY(), widgetEntity.getZ(), widgetEntity.getModified());
-    }
-
-    public static WidgetEntity widgetEntityFromWidgetCreate(Widget widget) {
-        return new WidgetEntity(widget.getId(), widget.getX(), widget.getY(), widget.getZ(), widget.getModified());
+        return new Widget(widgetEntity.getId(), widgetEntity.getX(), widgetEntity.getY(), widgetEntity.getZ(),
+                widgetEntity.getWidth(), widgetEntity.getHeight(), widgetEntity.getModified());
     }
 
     public static WidgetEntity widgetEntityFromWidgetCreate(Long id, WidgetCreate widget) {
-        return new WidgetEntity(id, widget.getX(), widget.getY(), widget.getZ());
+        return new WidgetEntity(id, widget.getX(), widget.getY(), widget.getZ(), widget.getWidth(), widget.getHeight());
     }
 
     public static WidgetEntity widgetEntityFromWidgetCreate(WidgetCreate widget) {
-        return new WidgetEntity(null, widget.getX(), widget.getY(), widget.getZ());
+        return new WidgetEntity(null, widget.getX(), widget.getY(), widget.getZ(), widget.getWidth(), widget.getHeight());
     }
 }

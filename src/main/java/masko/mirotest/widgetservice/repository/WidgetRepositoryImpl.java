@@ -1,30 +1,35 @@
 package masko.mirotest.widgetservice.repository;
 
-import masko.mirotest.widgetservice.api.model.Widget;
 import masko.mirotest.widgetservice.model.WidgetEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 import org.threeten.bp.OffsetDateTime;
 
-import javax.validation.constraints.NotNull;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository
 public class WidgetRepositoryImpl implements WidgetRepository {
 
-    private static TreeMap<Long, WidgetEntity> widgetsById = new TreeMap<Long, WidgetEntity>();
-    private static TreeMap<Integer, WidgetEntity> widgetsByZIndex = new TreeMap<Integer, WidgetEntity>();
+    private static final TreeMap<Long, WidgetEntity> widgetsById = new TreeMap<>();
+    private static final TreeMap<Integer, WidgetEntity> widgetsByZIndex = new TreeMap<>();
 
     @Override
     public Page<WidgetEntity> findAll(Pageable pageable) {
         List<WidgetEntity> widgetEntities = findAllList();
-//        List<Widget> pageList =
-//                widgets.subList(pageable.getPageNumber() * pageable.getPageSize(), pageable.getPageSize());
-        return new PageImpl<WidgetEntity>(widgetEntities);
+        int widgetCount = widgetEntities.size();
+        if (pageable.getOffset() < widgetCount) {
+            long safeSize = Math.min(
+                    Math.max(0, widgetCount - pageable.getOffset()), pageable.getPageSize());
+            //Not good
+            List<WidgetEntity> pageList = widgetEntities.subList((int) pageable.getOffset(),
+                    (int) (pageable.getOffset() + safeSize));
+            return new PageImpl<>(pageList, pageable, widgetCount);
+        } else {
+            return new PageImpl<>(new ArrayList<>(), pageable, widgetCount);
+        }
     }
 
     @Override
@@ -32,23 +37,30 @@ public class WidgetRepositoryImpl implements WidgetRepository {
         Long id = (s.getId() == null) ? getLastId() + 1 : s.getId();
         Integer z = (s.getZ() == null) ? getLastZIndex() + 1 : s.getZ();
 
-        WidgetEntity updatedWidget = new WidgetEntity(id, s.getX(), s.getY(), z, OffsetDateTime.now());
+        WidgetEntity updatedWidget = new WidgetEntity(id, s.getX(), s.getY(), z, s.getWidth(), s.getHeight(),
+                OffsetDateTime.now());
         WidgetEntity replacedWidget = widgetsById.put(updatedWidget.getId(), updatedWidget);
         if (replacedWidget != null)
             widgetsByZIndex.remove(replacedWidget.getZ());
 
-        if (widgetsByZIndex.containsKey(z)) {
-            Set<Integer> keysToShift =
-                    widgetsByZIndex.keySet().stream().filter(zIndex -> zIndex >= z).collect(Collectors.toSet());
-            for (Integer key : keysToShift) {
-                WidgetEntity widgetToShift = widgetsByZIndex.remove(key);
-                widgetToShift.setZ(key + 1);
-                widgetsByZIndex.put(key + 1, widgetToShift);
-            }
-        }
+        shiftWidgetsUp(z);
         widgetsByZIndex.put(updatedWidget.getZ(), updatedWidget);
 
         return (S) updatedWidget;
+    }
+
+    private void shiftWidgetsUp(Integer z) {
+        if (widgetsByZIndex.containsKey(z)) {
+            List<Integer> keysToShift =
+                    widgetsByZIndex.keySet().stream().filter(zIndex -> zIndex >= z).collect(Collectors.toList());
+            ListIterator<Integer> iterator = keysToShift.listIterator(keysToShift.size());
+            while (iterator.hasPrevious()) {
+                Integer key = iterator.previous();
+                WidgetEntity widgetToShift = widgetsByZIndex.remove(key);
+                widgetToShift.setZ(key + 1);
+                widgetsByZIndex.put(widgetToShift.getZ(), widgetToShift);
+            }
+        }
     }
 
     private Long getLastId() {
@@ -57,10 +69,6 @@ public class WidgetRepositoryImpl implements WidgetRepository {
 
     private Integer getLastZIndex() {
         return (widgetsByZIndex.isEmpty()) ? 1 : widgetsByZIndex.lastKey();
-    }
-
-    private Integer getFirstZIndex() {
-        return (widgetsByZIndex.isEmpty()) ? 1 : widgetsByZIndex.firstKey();
     }
 
     @Override

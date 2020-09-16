@@ -4,6 +4,7 @@ import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.threeten.bp.OffsetDateTime;
 
+import javax.validation.Valid;
 import javax.validation.constraints.*;
 
 /**
@@ -27,15 +28,26 @@ public class Widget {
   @NotNull
   private Integer z;
 
+  @JsonProperty("width")
+  @NotNull
+  private Integer width;
+
+  @JsonProperty("height")
+  @NotNull
+  private Integer height;
+
   @JsonProperty("modified")
   @NotNull
   private OffsetDateTime modified;
 
-  public Widget(@NotNull Long id, @NotNull Integer x, @NotNull Integer y, @NotNull Integer z, @NotNull OffsetDateTime modified) {
+  public Widget(@NotNull Long id, @NotNull Integer x, @NotNull Integer y, @NotNull Integer z, @NotNull Integer width,
+                @NotNull Integer height, @NotNull OffsetDateTime modified) {
     this.id = id;
     this.x = x;
     this.y = y;
     this.z = z;
+    this.width = width;
+    this.height = height;
     this.modified = modified;
   }
 
@@ -44,6 +56,8 @@ public class Widget {
     this.x = widget.x;
     this.y = widget.y;
     this.z = widget.z;
+    this.width = widget.width;
+    this.height = widget.height;
     this.modified = widget.modified;
   }
 
@@ -99,6 +113,42 @@ public class Widget {
     this.z = z;
   }
 
+  public Widget width(Integer width) {
+    this.width = width;
+    return this;
+  }
+
+  @NotNull
+  @Min(1)
+  public Integer getWidth() {
+    return width;
+  }
+
+  public void setWidth(Integer width) {
+    this.width = width;
+  }
+
+  public Widget height(Integer height) {
+    this.height = height;
+    return this;
+  }
+
+  @NotNull
+  @Min(1)
+  public Integer getHeight() {
+    return height;
+  }
+
+  public void setHeight(Integer height) {
+    this.height = height;
+  }
+
+  public Widget modified(OffsetDateTime modified) {
+    this.modified = modified;
+    return this;
+  }
+
+  @Valid
   public OffsetDateTime getModified() {
     return modified;
   }
@@ -120,12 +170,14 @@ public class Widget {
             Objects.equals(this.x, widget.x) &&
             Objects.equals(this.y, widget.y) &&
             Objects.equals(this.z, widget.z) &&
+            Objects.equals(this.width, widget.width) &&
+            Objects.equals(this.height, widget.height) &&
             Objects.equals(this.modified, widget.modified);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, x, y, z, modified);
+    return Objects.hash(id, x, y, z, width, height, modified);
   }
 
   @Override
@@ -137,6 +189,8 @@ public class Widget {
     sb.append("    x: ").append(toIndentedString(x)).append("\n");
     sb.append("    y: ").append(toIndentedString(y)).append("\n");
     sb.append("    z: ").append(toIndentedString(z)).append("\n");
+    sb.append("    width: ").append(toIndentedString(width)).append("\n");
+    sb.append("    height: ").append(toIndentedString(height)).append("\n");
     sb.append("    modified: ").append(toIndentedString(modified)).append("\n");
     sb.append("}");
     return sb.toString();
